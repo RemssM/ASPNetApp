@@ -1,0 +1,66 @@
+﻿@model ASPNetApp.Models.ToDoImportanceViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form asp-controller="ToDo" asp-action="Index" method="get">
+    <p>
+
+        <select asp-for="Importance" asp-items="Model.Importance">
+            <option value="">All</option>
+        </select>
+
+        Tache: <input type="text" name="SearchString">
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.toDos[0].Importance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.toDos[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.toDos[0].Importance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.toDos[0].Content)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model.toDos)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Importance)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Content)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

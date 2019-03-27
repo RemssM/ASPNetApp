@@ -12,5 +12,11 @@ namespace ASPNetApp.Models
         public SelectList Genres;
         public string MovieGenre { get; set; }
         public string SearchString { get; set; }
+        /*
+        public static implicit operator MovieGenreViewModel(MovieGenreViewModel v)
+        {
+            throw new NotImplementedException();
+        }
+        */
     }
 }
