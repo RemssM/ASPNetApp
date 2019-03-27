@@ -15,5 +15,8 @@ namespace ASPNetApp.Models
         public DateTime Date { get; set; }
         public string Importance { get; set; }
         public string Content { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime Deadline { get; set; }
     }
 }
