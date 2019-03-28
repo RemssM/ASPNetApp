@@ -33,11 +33,13 @@
                 <input asp-for="Deadline" class="form-control" />
                 <span asp-validation-for="Deadline" class="text-danger"></span>
             </div>
+
+            <input asp-for="Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" hidden />         
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-default" />
             </div>
 
-            <input asp-for="Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" hidden />
         </form>
     </div>
 </div>

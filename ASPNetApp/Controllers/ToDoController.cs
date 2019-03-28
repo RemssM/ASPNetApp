@@ -6,29 +6,35 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ASPNetApp.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace ASPNetApp.Controllers
 {
     public class ToDoController : Controller
     {
         private readonly ASPNetAppContext _context;
+        public UserManager<User> UserManager { get; set; }
 
-        public ToDoController(ASPNetAppContext context)
+        public ToDoController(ASPNetAppContext context, UserManager<User> um)
         {
             _context = context;
+            UserManager = um;
+
         }
 
         // GET: ToDoes
         public async Task<IActionResult> Index(string Importance, string searchString)
         {
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
             // Use LINQ to get list of genres.
             IQueryable<string> genreQuery = from m in _context.ToDo
                                             orderby m.Importance
                                             select m.Importance;
 
             var toDo = from m in _context.ToDo
-                         select m;
+                       select m;
 
+            toDo = toDo.Where(x => x.User == current_User);
             if(!string.IsNullOrEmpty(searchString))
             {
                 toDo = toDo.Where(s => s.Title.Contains(searchString));
@@ -51,14 +57,14 @@ namespace ASPNetApp.Controllers
         // GET: ToDoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if(id == null)
             {
                 return NotFound();
             }
 
             var toDo = await _context.ToDo
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (toDo == null)
+            if(toDo == null)
             {
                 return NotFound();
             }
@@ -77,10 +83,13 @@ namespace ASPNetApp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Date,Importance,Content,Deadline")] ToDo toDo)
+        public async Task<IActionResult> Create([Bind("Id,Title,Date,Importance,Content,Deadline,ID_User")] ToDo toDo)
         {
-            if (ModelState.IsValid)
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+
+            if(ModelState.IsValid)
             {
+                toDo.User = current_User;
                 _context.Add(toDo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -91,13 +100,13 @@ namespace ASPNetApp.Controllers
         // GET: ToDoes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if(id == null)
             {
                 return NotFound();
             }
 
             var toDo = await _context.ToDo.FindAsync(id);
-            if (toDo == null)
+            if(toDo == null)
             {
                 return NotFound();
             }
@@ -111,21 +120,21 @@ namespace ASPNetApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Date,Importance,Content,Deadline")] ToDo toDo)
         {
-            if (id != toDo.Id)
+            if(id != toDo.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if(ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(toDo);
                     await _context.SaveChangesAsync();
                 }
-                catch (DbUpdateConcurrencyException)
+                catch(DbUpdateConcurrencyException)
                 {
-                    if (!ToDoExists(toDo.Id))
+                    if(!ToDoExists(toDo.Id))
                     {
                         return NotFound();
                     }
@@ -142,14 +151,14 @@ namespace ASPNetApp.Controllers
         // GET: ToDoes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if(id == null)
             {
                 return NotFound();
             }
 
             var toDo = await _context.ToDo
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (toDo == null)
+            if(toDo == null)
             {
                 return NotFound();
             }

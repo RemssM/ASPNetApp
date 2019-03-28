@@ -4,14 +4,16 @@ using ASPNetApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ASPNetApp.Migrations
 {
     [DbContext(typeof(ASPNetAppContext))]
-    partial class ASPNetAppContextModelSnapshot : ModelSnapshot
+    [Migration("20190328110521_modifToDo")]
+    partial class modifToDo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,15 +53,13 @@ namespace ASPNetApp.Migrations
 
                     b.Property<DateTime>("Deadline");
 
+                    b.Property<string>("ID_User");
+
                     b.Property<string>("Importance");
 
                     b.Property<string>("Title");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("ToDo");
                 });
@@ -231,13 +231,6 @@ namespace ASPNetApp.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("ASPNetApp.Models.ToDo", b =>
-                {
-                    b.HasOne("ASPNetApp.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
