@@ -8,7 +8,10 @@ namespace ASPNetApp.Models
 {
     public class User : IdentityUser
     {
+        [PersonalData]
         public string nom { get; set; }
+        [PersonalData]
         public string prenom { get; set; }
+
     }
 }
