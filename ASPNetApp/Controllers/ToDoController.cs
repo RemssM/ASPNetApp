@@ -34,24 +34,28 @@ namespace ASPNetApp.Controllers
             var toDo = from m in _context.ToDo
                        select m;
 
-            toDo = toDo.Where(x => x.User == current_User);
-            if(!string.IsNullOrEmpty(searchString))
+            if(null != current_User)
             {
-                toDo = toDo.Where(s => s.Title.Contains(searchString));
+                toDo = toDo.Where(x => x.User == current_User);
+                if(!string.IsNullOrEmpty(searchString))
+                {
+                    toDo = toDo.Where(s => s.Title.Contains(searchString));
+                }
+
+                if(!string.IsNullOrEmpty(Importance))
+                {
+                    toDo = toDo.Where(x => x.Importance == Importance);
+                }
+
+                var ToDoImportanceVM = new ToDoImportanceViewModel
+                {
+                    Importance = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                    toDos = await toDo.ToListAsync()
+                };
+
+                return View(ToDoImportanceVM);
             }
-
-            if(!string.IsNullOrEmpty(Importance))
-            {
-                toDo = toDo.Where(x => x.Importance == Importance);
-            }
-
-            var ToDoImportanceVM = new ToDoImportanceViewModel
-            {
-                Importance = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                toDos = await toDo.ToListAsync()
-            };
-
-            return View(ToDoImportanceVM);
+            return View("ErreurPasConnecte");
         }
 
         // GET: ToDoes/Details/5
