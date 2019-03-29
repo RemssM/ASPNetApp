@@ -25,17 +25,20 @@ namespace ASPNetApp.Controllers
         // GET: ToDoes
         public async Task<IActionResult> Index(string Importance, string searchString)
         {
-            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
-            // Use LINQ to get list of genres.
-            IQueryable<string> genreQuery = from m in _context.ToDo where m.User == current_User
-                                            orderby m.Importance
-                                            select m.Importance;
 
-            var toDo = from m in _context.ToDo
-                       select m;
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
 
             if(null != current_User)
             {
+                // Use LINQ to get list of genres.
+                IQueryable<string> genreQuery = from m in _context.ToDo
+                                                where m.User == current_User
+                                                orderby m.Importance
+                                                select m.Importance;
+
+                var toDo = from m in _context.ToDo
+                           select m;
+
                 toDo = toDo.Where(x => x.User == current_User);
                 if(!string.IsNullOrEmpty(searchString))
                 {
@@ -52,34 +55,46 @@ namespace ASPNetApp.Controllers
                     Importance = new SelectList(await genreQuery.Distinct().ToListAsync()),
                     toDos = await toDo.ToListAsync()
                 };
-                
+
                 return View(ToDoImportanceVM);
             }
             return View("ErreurPasConnecte");
         }
 
+
         // GET: ToDoes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if(id == null)
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+            if(null != current_User)
             {
-                return NotFound();
-            }
+                if(id == null)
+                {
+                    return NotFound();
+                }
 
-            var toDo = await _context.ToDo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if(toDo == null)
-            {
-                return NotFound();
-            }
+                var toDo = await _context.ToDo
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if(toDo == null)
+                {
+                    return NotFound();
+                }
 
-            return View(toDo);
+                return View(toDo);
+            }
+            return View("ErreurPasConnecte");
+
         }
 
         // GET: ToDoes/Create
         public IActionResult Create()
         {
-            return View();
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+            if(null != current_User)
+            {
+                return View();
+            }
+            return View("ErreurPasConnecte");
         }
 
         // POST: ToDoes/Create
@@ -90,31 +105,39 @@ namespace ASPNetApp.Controllers
         public async Task<IActionResult> Create([Bind("Id,Title,Date,Importance,Content,Deadline,ID_User")] ToDo toDo)
         {
             var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
-
-            if(ModelState.IsValid)
+            if(null != current_User)
             {
-                toDo.User = current_User;
-                _context.Add(toDo);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if(ModelState.IsValid)
+                {
+                    toDo.User = current_User;
+                    _context.Add(toDo);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(toDo);
             }
-            return View(toDo);
+            return View("ErreurPasConnecte");
         }
 
         // GET: ToDoes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null)
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+            if(null != current_User)
             {
-                return NotFound();
-            }
+                if(id == null)
+                {
+                    return NotFound();
+                }
 
-            var toDo = await _context.ToDo.FindAsync(id);
-            if(toDo == null)
-            {
-                return NotFound();
+                var toDo = await _context.ToDo.FindAsync(id);
+                if(toDo == null)
+                {
+                    return NotFound();
+                }
+                return View(toDo);
             }
-            return View(toDo);
+            return View("ErreurPasConnecte");
         }
 
         // POST: ToDoes/Edit/5
@@ -124,50 +147,61 @@ namespace ASPNetApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Date,Importance,Content,Deadline")] ToDo toDo)
         {
-            if(id != toDo.Id)
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+            if(null != current_User)
             {
-                return NotFound();
-            }
+                if(id != toDo.Id)
+                {
+                    return NotFound();
+                }
 
-            if(ModelState.IsValid)
-            {
-                try
+                if(ModelState.IsValid)
                 {
-                    _context.Update(toDo);
-                    await _context.SaveChangesAsync();
-                }
-                catch(DbUpdateConcurrencyException)
-                {
-                    if(!ToDoExists(toDo.Id))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(toDo);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch(DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if(!ToDoExists(toDo.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return View(toDo);
             }
-            return View(toDo);
+            return View("ErreurPasConnecte");
         }
 
         // GET: ToDoes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if(id == null)
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+            if(null != current_User)
             {
-                return NotFound();
-            }
+                if(id == null)
+                {
+                    return NotFound();
+                }
 
-            var toDo = await _context.ToDo
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if(toDo == null)
-            {
-                return NotFound();
-            }
+                var toDo = await _context.ToDo
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                if(toDo == null)
+                {
+                    return NotFound();
+                }
 
-            return View(toDo);
+
+                return View(toDo);
+            }
+            return View("ErreurPasConnecte");
         }
 
         // POST: ToDoes/Delete/5
@@ -175,15 +209,22 @@ namespace ASPNetApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var toDo = await _context.ToDo.FindAsync(id);
-            _context.ToDo.Remove(toDo);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
+            if(null != current_User)
+            {
+                var toDo = await _context.ToDo.FindAsync(id);
+                _context.ToDo.Remove(toDo);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View("ErreurPasConnecte");
         }
 
         private bool ToDoExists(int id)
         {
+
             return _context.ToDo.Any(e => e.Id == id);
+
         }
     }
 }
