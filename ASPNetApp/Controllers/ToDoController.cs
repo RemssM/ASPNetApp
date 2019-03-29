@@ -27,7 +27,7 @@ namespace ASPNetApp.Controllers
         {
             var current_User = UserManager.GetUserAsync(HttpContext.User).Result;
             // Use LINQ to get list of genres.
-            IQueryable<string> genreQuery = from m in _context.ToDo
+            IQueryable<string> genreQuery = from m in _context.ToDo where m.User == current_User
                                             orderby m.Importance
                                             select m.Importance;
 
@@ -52,7 +52,7 @@ namespace ASPNetApp.Controllers
                     Importance = new SelectList(await genreQuery.Distinct().ToListAsync()),
                     toDos = await toDo.ToListAsync()
                 };
-
+                
                 return View(ToDoImportanceVM);
             }
             return View("ErreurPasConnecte");
