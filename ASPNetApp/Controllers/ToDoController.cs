@@ -109,8 +109,8 @@ namespace ASPNetApp.Controllers
             {
                 if(ModelState.IsValid)
                 {
-                    toDo.User = current_User;
-                    _context.Add(toDo);
+                    toDo.User = current_User; 
+                    _context.Add(toDo); 
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
